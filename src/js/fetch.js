@@ -7,5 +7,5 @@ export function fetchImg (q) {
         safesearch: 'safesearch=true',
     }
 
-    return fetch(`${option.url}${option.key}&${q}&${option.imageType}&${option.orientation}&${option.safesearch}`)
+    return fetch(`${option.url}${option.key}&q=${q}&${option.imageType}&${option.orientation}&${option.safesearch}`)
 }

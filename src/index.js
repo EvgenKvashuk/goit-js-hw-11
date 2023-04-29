@@ -7,7 +7,7 @@ import { fetchImg } from "./js/fetch";
 refs.form.addEventListener('submit', (evt) => {
     evt.preventDefault();
 
-    const q = `q=${refs.input.value}`;
+    const q = `${refs.input.value}`;
 
     fetchImg(q)
         .then(response => {
@@ -19,9 +19,16 @@ refs.form.addEventListener('submit', (evt) => {
         .then(data => {
             console.log(data.hits)
             if (data.hits.length == 0) {
-                Notiflix.Notify.failure('not found img');
+                Notiflix.Notify.failure('Sorry, there are no images matching your search query. Please try again.');
+                refs.gallery.innerHTML = '';
             }
-            markup(data)
+
+            if (q === '') {          
+                console.log('пусто');
+                Notiflix.Notify.failure('empty');
+              };
+
+                markup(data)
         })
         .catch(error => { });
 });
@@ -34,10 +41,10 @@ function markup(data) {
             <img src="${webformatURL}" alt="${tags}" loading="lazy" />
 
             <div class="info">
-                <p class="info-item"><b>Likes</b>${likes}</p>
-                <p class="info-item"><b>Views</b>${views}</p>
-                <p class="info-item"><b>Comments</b>${comments}</p>
-                <p class="info-item"><b>Downloads</b>${downloads}</p>
+                <p class="info-item"><b>Likes</b>: ${likes}</p>
+                <p class="info-item"><b>Views</b>: ${views}</p>
+                <p class="info-item"><b>Comments</b>: ${comments}</p>
+                <p class="info-item"><b>Downloads</b>: ${downloads}</p>
             </div>
         </div>
         `)
