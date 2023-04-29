@@ -1,28 +1,89 @@
 import axios from "axios";
 import Notiflix from "notiflix";
 
-const url = 'https://pixabay.com/api/';
-const key = '35871708-bbfa936b0bfd126629100243d';
+import { refs } from "./js/refs";
+import { fetchImg } from "./js/fetch";
 
-const form = document.querySelector('.search-form')
-
-const q = form.addEventListener('input', (e) => {})
-
-form.addEventListener('submit', (evt) => {
+refs.form.addEventListener('submit', (evt) => {
     evt.preventDefault();
 
-    fetch(`${url}?key=${key}&${q}&image_type=photo`)
-    .then(response => {
-        if (!response.ok) {
-            throw new Error(response.status);
-        }
-        return response.json();
-    })
-    .then(data => {
-        console.log(data)
-        // Data handling
-    })
-    .catch(error => {
-        // Error handling
-    });
+    const q = `q=${refs.input.value}`;
+
+    fetchImg(q)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(response.status);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log(data.hits)
+            if (data.hits.length == 0) {
+                Notiflix.Notify.failure('not found img');
+            }
+            markup(data)
+        })
+        .catch(error => { });
 });
+
+
+function markup(data) {
+    const markup = data.hits
+        .map(({ webformatURL, largeImageURL, tags, likes, views, comments, downloads }) => `
+        <div class="photo-card">
+            <img src="${webformatURL}" alt="${tags}" loading="lazy" />
+
+            <div class="info">
+                <p class="info-item"><b>Likes</b>${likes}</p>
+                <p class="info-item"><b>Views</b>${views}</p>
+                <p class="info-item"><b>Comments</b>${comments}</p>
+                <p class="info-item"><b>Downloads</b>${downloads}</p>
+            </div>
+        </div>
+        `)
+        .join("");
+    refs.gallery.insertAdjacentHTML("afterbegin", markup);
+}
+
+
+
+// delit after
+// const q = 'cat';
+
+// fetchImg(q)
+
+// fetchImg(q)
+// .then(response => {
+//     if (!response.ok) {
+//         throw new Error(response.status);
+//     }
+//     return response.json();
+// })
+// .then(data => {
+//     console.log(data.hits)
+//     if (data.hits.length == 0) {
+//         Notiflix.Notify.failure('not found img');
+//     }
+
+//     markup(data)
+// })
+// .catch(error => {           });
+
+
+// function markup(data) {
+//     const markup = data.hits
+//         .map(({ webformatURL, largeImageURL, tags, likes, views, comments, downloads }) => `
+//         <div class="photo-card">
+//             <img src="${webformatURL}" alt="${tags}" loading="lazy" />
+
+//             <div class="info">
+//                 <p class="info-item"><b>Likes</b>${likes}</p>
+//                 <p class="info-item"><b>Views</b>${views}</p>
+//                 <p class="info-item"><b>Comments</b>${comments}</p>
+//                 <p class="info-item"><b>Downloads</b>${downloads}</p>
+//             </div>
+//         </div>
+//         `)
+//         .join("");
+//     refs.gallery.insertAdjacentHTML("afterbegin", markup);
+// }
