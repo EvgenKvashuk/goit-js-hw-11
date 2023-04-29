@@ -7,7 +7,7 @@ import { fetchImg } from "./js/fetch";
 refs.form.addEventListener('submit', (evt) => {
     evt.preventDefault();
 
-    const q = `${refs.input.value}`;
+    const q = refs.input.value;
 
     fetchImg(q)
         .then(response => {
@@ -17,24 +17,26 @@ refs.form.addEventListener('submit', (evt) => {
             return response.json();
         })
         .then(data => {
-            console.log(data.hits)
-            if (data.hits.length == 0) {
+            // console.log(data.hits)
+            if (data.hits.length === 0) {
                 Notiflix.Notify.failure('Sorry, there are no images matching your search query. Please try again.');
                 refs.gallery.innerHTML = '';
             }
 
-            if (q === '') {          
-                console.log('пусто');
-                Notiflix.Notify.failure('empty');
-              };
-
-                markup(data)
+            if (q === '') {
+                Notiflix.Notify.failure('Search bar is empty, ');
+                refs.photoCard.innerHTML = '';
+            };
+            markup(data)
         })
         .catch(error => { });
 });
 
 
 function markup(data) {
+
+    refs.gallery.innerHTML = '';
+
     const markup = data.hits
         .map(({ webformatURL, largeImageURL, tags, likes, views, comments, downloads }) => `
         <div class="photo-card">
@@ -54,7 +56,7 @@ function markup(data) {
 
 
 
-// delit after
+// delit after для стилів
 // const q = 'cat';
 
 // fetchImg(q)
