@@ -1,18 +1,16 @@
-.info {
-  display: flex;
-  gap: 20px;
-}
-
-.gallery {
-  display: flex;
-
-}
-
- 
-
 :root {
   --timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   --animation-duration: 250ms;
+}
+
+.search-form {
+  display: flex;
+  justify-content: center;
+
+  background-color: rgba(68, 37, 179, 0.726);
+
+padding: 40px;
+  margin-bottom: 40px;
 }
 
 .gallery {
