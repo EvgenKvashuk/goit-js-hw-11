@@ -21,7 +21,7 @@ refs.form.addEventListener('submit', (evt) => {
             return response.json();
         })
         .then(data => {
-            console.log(data.hits)
+            console.log(data.totalHits)
             if (data.hits.length === 0) {
                 Notiflix.Notify.failure('Sorry, there are no images matching your search query. Please try again.');
                 refs.gallery.innerHTML = '';
@@ -36,9 +36,12 @@ refs.form.addEventListener('submit', (evt) => {
             if (data.hits.length > 0) {
                 markup(data)
                 refs.loadMore.classList.remove("is-hide")
+                Notiflix.Notify.success(`We found ${data.totalHits} images`);
             }
         })
-        .catch(error => { });
+        .catch(error => {
+
+         });
 });
 
 
