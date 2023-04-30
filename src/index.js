@@ -25,18 +25,18 @@ refs.form.addEventListener('submit', (evt) => {
             if (data.hits.length === 0) {
                 Notiflix.Notify.failure('Sorry, there are no images matching your search query. Please try again.');
                 refs.gallery.innerHTML = '';
-                refs.loadMore.classList.add("is-hide")
+                refs.loadMore.classList.add("is-hide");
             }
 
             if (q === '') {
                 Notiflix.Notify.failure('Search bar is empty');
-                refs.photoCard.innerHTML = '';
+                refs.photoCard.remove();
             };
 
             if (data.hits.length > 0) {
-                markup(data)
-                refs.loadMore.classList.remove("is-hide")
-                Notiflix.Notify.success(`We found ${data.totalHits} images`);
+                markup(data);
+                refs.loadMore.classList.remove("is-hide");
+                Notiflix.Notify.success(`Horray! We found ${data.totalHits} images`);
             }
         })
         .catch(error => {
