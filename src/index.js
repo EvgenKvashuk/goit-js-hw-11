@@ -25,6 +25,7 @@ refs.form.addEventListener('submit', (evt) => {
             if (data.hits.length === 0) {
                 Notiflix.Notify.failure('Sorry, there are no images matching your search query. Please try again.');
                 refs.gallery.innerHTML = '';
+                refs.loadMore.classList.add("is-hide")
             }
 
             if (q === '') {
@@ -32,7 +33,10 @@ refs.form.addEventListener('submit', (evt) => {
                 refs.photoCard.innerHTML = '';
             };
 
-            markup(data)
+            if (data.hits.length > 0) {
+                markup(data)
+                refs.loadMore.classList.remove("is-hide")
+            }
         })
         .catch(error => { });
 });
@@ -40,8 +44,6 @@ refs.form.addEventListener('submit', (evt) => {
 
 function markup(data) {
     refs.gallery.innerHTML = '';
-
-        refs.loadMore.classList.remove("is-hide")
 
     const markup = data.hits
         .map(({ webformatURL, largeImageURL, tags, likes, views, comments, downloads }) => `
