@@ -1,110 +1,67 @@
-import axios from "axios";
-import Notiflix from "notiflix";
+import './sass/index.scss';
+import fetch from './js/fetch';
+import renderImageCard from './js/render';
+import { Notify } from 'notiflix/build/notiflix-notify-aio';
 
-import { refs } from "./js/refs";
-import { fetchImg } from "./js/fetch";
+const { searchForm, gallery, loadMoreBtn } = {
+  searchForm: document.querySelector('.search-form'),
+  gallery: document.querySelector('.gallery'),
+  loadMoreBtn: document.querySelector('.load-more'),
 
-import SimpleLightbox from "simplelightbox";
-import "simplelightbox/dist/simple-lightbox.min.css";
+};
+
+let currentPage = 1;
+let currentHits = 0;
+let searchQuery = '';
+
+searchForm.addEventListener('submit', async (evt) => {
+  evt.preventDefault();
+  searchQuery = evt.currentTarget.searchQuery.value.trim();
+  currentPage = 1;
+
+  if (searchQuery === '') {
+    return;
+  }
+
+  const response = await fetch(searchQuery, currentPage);
+  currentHits = response.hits.length;
+
+  if (response.totalHits > 40) {
+    loadMoreBtn.classList.remove('is-hidden');
+
+  } else {
+    loadMoreBtn.classList.add('is-hidden');
+
+  }
+
+  try {
+    if (response.totalHits > 0) {
+      Notify.success(`Hooray! We found ${response.totalHits} images.`);
+      gallery.innerHTML = '';
+      renderImageCard(response.hits, gallery);
+    }
+
+    if (response.totalHits === 0) {
+      gallery.innerHTML = '';
+      Notify.failure(
+        'Sorry, there are no images matching your search query. Please try again.'
+      );
+      loadMoreBtn.classList.add('is-hidden');
+
+    }
+  } catch (error) {
+    console.error(error);
+  }
+})
+
+loadMoreBtn.addEventListener('click', async (evt) => {
+  currentPage += 1;
+  const response = await fetch(searchQuery, currentPage);
+  renderImageCard(response.hits, gallery);
+  currentHits += response.hits.length;
 
 
-refs.form.addEventListener('submit', (evt) => {
-    evt.preventDefault();
-
-    const q = refs.input.value;
-
-    fetchImg(q)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(response.status);
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log(data.totalHits)
-            if (data.hits.length === 0) {
-                Notiflix.Notify.failure('Sorry, there are no images matching your search query. Please try again.');
-                refs.gallery.innerHTML = '';
-                refs.loadMore.classList.add("is-hide");
-            }
-
-            if (q === '') {
-                Notiflix.Notify.failure('Search bar is empty');
-                refs.photoCard.remove();
-            };
-
-            if (data.hits.length > 0) {
-                markup(data);
-                refs.loadMore.classList.remove("is-hide");
-                Notiflix.Notify.success(`Horray! We found ${data.totalHits} images`);
-            }
-        })
-        .catch(error => {
-
-         });
+  if (currentHits === response.totalHits) {
+    loadMoreBtn.classList.add('is-hidden');
+  }
 });
-
-
-function markup(data) {
-    refs.gallery.innerHTML = '';
-
-    const markup = data.hits
-        .map(({ webformatURL, largeImageURL, tags, likes, views, comments, downloads }) => `
-        <div class="photo-card">
-            <img class='gallery__image' src="${webformatURL}" alt="${tags}" loading="lazy" />
-                        
-            <div class="info">
-                <p class="info-item"><b>Likes</b>: ${likes}</p>
-                <p class="info-item"><b>Views</b>: ${views}</p>
-                <p class="info-item"><b>Comments</b>: ${comments}</p>
-                <p class="info-item"><b>Downloads</b>: ${downloads}</p>
-            </div>
-        </div>
-        `)
-        .join("");
-    refs.gallery.insertAdjacentHTML("afterbegin", markup);
-}
-
-
-
-// delit after для стилів
-
-// const q = 'cat';
-
-// fetchImg(q)
-//     .then(response => {
-//         if (!response.ok) {
-//             throw new Error(response.status);
-//         }
-//         return response.json();
-//     })
-//     .then(data => {
-//         console.log(data.hits)
-
-//         markup(data)
-//         console.log(page)
-//     })
-//     .catch(error => { });
-
-
-
-// function markup(data) {
-//     refs.gallery.innerHTML = '';
-
-//     const markup = data.hits
-//         .map(({ webformatURL, largeImageURL, tags, likes, views, comments, downloads }) => `
-//                         <div class="photo-card">
-//                             <img class='gallery__image' src="${webformatURL}" alt="${tags}" loading="lazy" />
-                        
-//                             <div class="info">
-//                                 <p class="info-item"><b>Likes</b>: ${likes}</p>
-//                                 <p class="info-item"><b>Views</b>: ${views}</p>
-//                                 <p class="info-item"><b>Comments</b>: ${comments}</p>
-//                                 <p class="info-item"><b>Downloads</b>: ${downloads}</p>
-//                             </div>
-
-//                             </div>
-//                         `)
-//         .join("");
-//     refs.gallery.insertAdjacentHTML("afterbegin", markup);
-// }
