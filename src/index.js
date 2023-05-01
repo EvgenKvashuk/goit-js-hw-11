@@ -1,4 +1,3 @@
-import './sass/index.scss';
 import fetch from './js/fetch';
 import renderImageCard from './js/render';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
